@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Widget info descriptor.
+  - minWidth/minHeight: roughly 4×2 cells on a standard 74dp-per-cell grid.
+  - updatePeriodMillis: 0 = no automatic OS-driven refresh (we push manually).
+  - initialLayout: references the layout XML below.
+  - widgetCategory: home_screen
+  - previewImage: optional — add a drawable named widget_preview for the picker.
+-->
+<appwidget-provider xmlns:android="http://schemas.android.com/apk/res/android"
+    android:description="@string/app_name"
+    android:initialLayout="@layout/flight_widget_layout"
+    android:minWidth="250dp"
+    android:minHeight="110dp"
+    android:resizeMode="horizontal|vertical"
+    android:updatePeriodMillis="0"
+    android:widgetCategory="home_screen" />

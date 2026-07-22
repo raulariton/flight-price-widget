@@ -1,0 +1,29 @@
+name: flutter_flight_widget
+description: "Flight price tracker with home screen widgets for Android and iOS."
+publish_to: 'none'
+
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.12.2
+
+dependencies:
+  flutter:
+    sdk: flutter
+  cupertino_icons: ^1.0.8
+  # Home screen widget integration for Android and iOS
+  home_widget: ^0.6.0
+  # Persistent key-value storage for selected flight and currency
+  shared_preferences: ^2.3.3
+  # State management
+  provider: ^6.1.2
+  # Date formatting for departure dates and last-updated timestamps
+  intl: ^0.19.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+
+flutter:
+  uses-material-design: true
