@@ -7,7 +7,7 @@ import '../data/sample_flights.dart';
 import '../models/currency.dart';
 import '../models/flight.dart';
 
-// SharedPreferences keys
+// SharedPreferences keys (k for constant, _ for private)
 const _kSelectedFlightId = 'selected_flight_id';
 const _kSelectedCurrency = 'selected_currency';
 
@@ -25,12 +25,19 @@ const _kwUpdated = 'widget_updated';
 /// Persists selection to [SharedPreferences] and pushes data to the
 /// home screen widget via [HomeWidget] whenever either changes.
 class FlightProvider extends ChangeNotifier {
+
+  // Constructor
   FlightProvider() {
+    // run init function
+    // no await so it starts in the background, spinner is shown
+    // and when it finishes, notifyListeners() is called to update the UI
     _init();
   }
 
+  // get flights from sample data
   final List<Flight> flights = sampleFlights;
 
+  // State
   Flight? _selectedFlight;
   Currency _currency = Currency.usd;
   bool _loading = true;
@@ -39,20 +46,20 @@ class FlightProvider extends ChangeNotifier {
   Currency get currency => _currency;
   bool get loading => _loading;
 
-  // ── Initialise ─────────────────────────────────────────────────────────────
-
+  /// Private constructor
+  /// Future is like promise, use async/await to handle it
   Future<void> _init() async {
     // Tell home_widget which App Group to use (required on iOS).
     await HomeWidget.setAppGroupId(_kAppGroupId);
 
-    final prefs = await SharedPreferences.getInstance();
+    final preferences = await SharedPreferences.getInstance();
 
-    final savedCurrency = prefs.getString(_kSelectedCurrency);
+    final savedCurrency = preferences.getString(_kSelectedCurrency);
     if (savedCurrency != null) {
       _currency = Currency.fromCode(savedCurrency);
     }
 
-    final savedId = prefs.getString(_kSelectedFlightId);
+    final savedId = preferences.getString(_kSelectedFlightId);
     if (savedId != null) {
       _selectedFlight =
           flights.firstWhere((f) => f.id == savedId, orElse: () => flights[0]);
@@ -69,8 +76,8 @@ class FlightProvider extends ChangeNotifier {
     _selectedFlight = flight;
     notifyListeners();
 
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString(_kSelectedFlightId, flight.id);
+    final preferences = await SharedPreferences.getInstance();
+    await preferences.setString(_kSelectedFlightId, flight.id);
     await _updateWidget();
   }
 
@@ -79,8 +86,8 @@ class FlightProvider extends ChangeNotifier {
     _currency = c;
     notifyListeners();
 
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString(_kSelectedCurrency, c.code);
+    final preferences = await SharedPreferences.getInstance();
+    await preferences.setString(_kSelectedCurrency, c.code);
     await _updateWidget();
   }
 
