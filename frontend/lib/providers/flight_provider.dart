@@ -26,6 +26,21 @@ const _kwUpdated = 'widget_updated';
 /// home screen widget via [HomeWidget] whenever either changes.
 class FlightProvider extends ChangeNotifier {
 
+  bool _isPreview = false;
+
+  /// For widgetbook and for unit tests
+  @visibleForTesting
+  FlightProvider.preview({
+    Flight? selected,
+    Currency currency = Currency.usd,
+    bool loading = false,
+  }) {
+    _selectedFlight = selected;
+    _currency = currency;
+    _loading = loading;
+    _isPreview = true;
+  }
+
   // Constructor
   FlightProvider() {
     // run init function
@@ -61,8 +76,10 @@ class FlightProvider extends ChangeNotifier {
 
     final savedId = preferences.getString(_kSelectedFlightId);
     if (savedId != null) {
-      _selectedFlight =
-          flights.firstWhere((f) => f.id == savedId, orElse: () => flights[0]);
+      _selectedFlight = flights.firstWhere(
+        (f) => f.id == savedId,
+        orElse: () => flights[0],
+      );
     }
 
     _loading = false;
@@ -73,8 +90,14 @@ class FlightProvider extends ChangeNotifier {
 
   /// Select a flight, persist to prefs, and update the widget.
   Future<void> selectFlight(Flight flight) async {
+
     _selectedFlight = flight;
     notifyListeners();
+
+    if (_isPreview) {
+      // Skip preferences and widget update for testing/widgetbook
+      return;
+    }
 
     final preferences = await SharedPreferences.getInstance();
     await preferences.setString(_kSelectedFlightId, flight.id);
@@ -85,6 +108,11 @@ class FlightProvider extends ChangeNotifier {
   Future<void> setCurrency(Currency c) async {
     _currency = c;
     notifyListeners();
+
+    if (_isPreview) {
+      // Skip preferences and widget update for testing/widgetbook
+      return;
+    }
 
     final preferences = await SharedPreferences.getInstance();
     await preferences.setString(_kSelectedCurrency, c.code);
@@ -103,14 +131,19 @@ class FlightProvider extends ChangeNotifier {
   /// [HomeWidget.updateWidget] is called to trigger a visual refresh on both
   /// Android (via AppWidgetProvider) and iOS (via WidgetKit Timeline reload).
   Future<void> _updateWidget() async {
+
+    if (_isPreview) {
+      return;
+    }
+
     final flight = _selectedFlight;
     if (flight == null) return;
 
     final priceFormatted = _currency.format(flight.priceUSD);
-    final dateFormatted =
-        DateFormat('MMM d, yyyy').format(flight.departureDate);
-    final updatedFormatted =
-        DateFormat('h:mm a').format(DateTime.now());
+    final dateFormatted = DateFormat(
+      'MMM d, yyyy',
+    ).format(flight.departureDate);
+    final updatedFormatted = DateFormat('h:mm a').format(DateTime.now());
 
     // Write each data field to the shared container.
     await Future.wait([
