@@ -1,12 +1,24 @@
 import 'package:flutter/material.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:provider/provider.dart';
 
-import '../models/currency.dart';
-import '../providers/flight_provider.dart';
+import '../../models/currency.dart';
+import '../../providers/flight_provider.dart';
 
 /// Settings screen — currently only exposes currency selection.
-class SettingsScreen extends StatelessWidget {
+class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
+
+  @override
+  State<SettingsScreen> createState() => _SettingsScreenState();
+}
+
+class _SettingsScreenState extends State<SettingsScreen> {
+  // Fetched once per screen instance (not on every rebuild) and read from
+  // pubspec.yaml's `version:` field via the native build metadata Flutter
+  // generates at build time (Info.plist on iOS, build.gradle on Android).
+  late final Future<PackageInfo> _packageInfoFuture =
+      PackageInfo.fromPlatform();
 
   @override
   Widget build(BuildContext context) {
@@ -18,7 +30,7 @@ class SettingsScreen extends StatelessWidget {
       ),
       body: ListView(
         children: [
-          // ── Currency ────────────────────────────────────────────────────────
+          // Currency Selection
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 20, 16, 6),
             child: Text(
@@ -29,6 +41,7 @@ class SettingsScreen extends StatelessWidget {
                   ),
             ),
           ),
+          // Radio selection list
           RadioGroup<Currency>(
             groupValue: provider.currency,
             onChanged: (c) => provider.setCurrency(c!),
@@ -44,9 +57,11 @@ class SettingsScreen extends StatelessWidget {
                   .toList(),
             ),
           ),
-          const Divider(height: 32),
+          
+          const Divider(height: 32), // const here to force flutter to 
+          // not re-build the divider everytime the screen refreshes
 
-          // ── Widget control ──────────────────────────────────────────────────
+          // Refresh widget
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 0, 16, 6),
             child: Text(
@@ -66,13 +81,14 @@ class SettingsScreen extends StatelessWidget {
               if (context.mounted) {
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(
-                    content: Text('Widget updated ✓'),
+                    content: Text('Widget updated.'),
                     duration: Duration(seconds: 2),
                   ),
                 );
               }
             },
           ),
+
           const Divider(height: 32),
 
           // ── About ────────────────────────────────────────────────────────────
@@ -86,11 +102,21 @@ class SettingsScreen extends StatelessWidget {
                   ),
             ),
           ),
-          const ListTile(
-            leading: Icon(Icons.info_outline),
-            title: Text('Flutter Flight Widget'),
-            subtitle: Text('v1.0.0 — prototype'),
+          FutureBuilder<PackageInfo>(
+            future: _packageInfoFuture,
+            builder: (context, snapshot) {
+              final info = snapshot.data;
+              final versionText = info == null
+                  ? 'Loading version…'
+                  : 'v${info.version} (build ${info.buildNumber})';
+              return ListTile(
+                leading: const Icon(Icons.info_outline),
+                title: const Text('Flutter Flight Widget'),
+                subtitle: Text(versionText),
+              );
+            },
           ),
+          // TODO: Remove or have something like "Sourced from X API"
           const ListTile(
             leading: Icon(Icons.currency_exchange),
             title: Text('Exchange rates'),
