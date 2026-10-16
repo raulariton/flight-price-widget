@@ -2,7 +2,7 @@ name: flutter_flight_widget
 description: "Flight price tracker with home screen widgets for Android and iOS."
 publish_to: 'none'
 
-version: 1.0.0+1
+version: 1.0.0+2
 
 environment:
   sdk: ^3.12.2
@@ -19,6 +19,7 @@ dependencies:
   provider: ^6.1.2
   # Date formatting for departure dates and last-updated timestamps
   intl: ^0.19.0
+  package_info_plus: ^10.2.2
 
 dev_dependencies:
   flutter_test:
