@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_flight_widget/features/source_adding/screens/add_email_source.dart';
+import 'package:flutter_flight_widget/providers/source_email_provider.dart';
 import 'package:provider/provider.dart';
 
 import '../../../providers/flight_provider.dart';
 import '../../settings/settings_screen.dart';
-
-import '../widgets/widget_preview_card.dart';
-import '../widgets/flight_list_item.dart';
 
 /// Main screen: list of trackable flights with selection and widget controls.
 class HomeScreen extends StatelessWidget {
@@ -40,16 +39,30 @@ class HomeScreen extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Center(
-            child: Column(children: [
-              Column(children: [
-                Text('No flights tracked yet'),
-                Text('Add your first source to start receiving real-time price drops and widgets')
-              ]),
-                FilledButton(onPressed: () => Navigator.push(
-              context,
-              MaterialPageRoute(builder: (_) => const SettingsScreen()),
-            ),, child: const Text('Add your first source')),
-            ],)
+            child: Column(
+              children: [
+                Column(
+                  children: [
+                    Text('No flights tracked yet'),
+                    Text(
+                      'Add your first source to start receiving real-time price drops and widgets',
+                    ),
+                  ],
+                ),
+                FilledButton(
+                  onPressed: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => ChangeNotifierProvider(
+                        create: (_) => SourceEmailProvider(),
+                        child: const AddEmailSourceScreen(),
+                      ),
+                    ),
+                  ),
+                  child: const Text('Add your first source'),
+                ),
+              ],
+            ),
           ),
           // // Construct widget preview card with selected flight
           // if (provider.selectedFlight != null)
