@@ -14,6 +14,19 @@ class AddEmailSourceScreen extends StatelessWidget {
       return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
 
+    final emailAddress = provider.emailAddress;
+    if (provider.error || emailAddress == null) {
+      print('$emailAddress, ${provider.error}');
+      return Scaffold(
+        appBar: AppBar(title: const Text('Add source')),
+        body: const Center(
+          child: Text(
+            'Could not load your forwarding address. Please try again.',
+          ),
+        ),
+      );
+    }
+
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
@@ -30,24 +43,37 @@ class AddEmailSourceScreen extends StatelessWidget {
               margin: const EdgeInsets.fromLTRB(16, 16, 16, 0),
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.primary,
+                color: Theme.of(context).colorScheme.primaryContainer,
                 borderRadius: BorderRadius.circular(16),
               ),
-              child: Column(
-                children: [
-                  Row(
-                    spacing: 12,
+              child: DefaultTextStyle.merge(
+                style: TextStyle(
+                  color: Theme.of(context).colorScheme.onPrimaryContainer,
+                ),
+                child: IconTheme.merge(
+                  data: IconThemeData(
+                    color: Theme.of(context).colorScheme.onPrimaryContainer,
+                  ),
+                  child: Column(
                     children: [
-                      Icon(Icons.mail_outline),
-                      Text('YOUR EMAIL FORWARDING ADDRESS'),
+                      Row(
+                        spacing: 12,
+                        children: [
+                          Icon(
+                            Icons.mail_outline,
+                            color: Theme.of(context).colorScheme.surface,
+                          ),
+                          Text('YOUR EMAIL FORWARDING ADDRESS'),
+                        ],
+                      ),
+                      Text(
+                        'Forward your Google Flights price alert emails to this address. The app will then monitor this address to extract route details, flight numbers, and price movements.',
+                      ),
+                      SizedBox(height: 16),
+                      EmailCopyField(emailAddress: emailAddress),
                     ],
                   ),
-                  Text(
-                    'Forward your Google Flights price alert emails to this address. The app will then monitor this address to extract route details, flight numbers, and price movements.',
-                  ),
-                  SizedBox(height: 16),
-                  EmailCopyField(emailAddress: provider.emailAddress!),
-                ],
+                ),
               ),
             ),
           ],
