@@ -1,14 +1,19 @@
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
-import 'dart:convert';
+
+String get baseBackendUrl =>
+    dotenv.env['BASE_BACKEND_URL'] ?? 'http://localhost:5000';
 
 class AddEmailSourceAPI {
   Future<String> getForwardingAddress() async {
-    final res = await http.get(Uri.parse('$BASE_BACKEND_URL/email'));
+    final res = await http.get(Uri.parse('$baseBackendUrl/email'));
 
     if (res.statusCode != 200) {
-      throw Exception('Failed to get forwarding email address: ${res.statusCode}');
+      throw Exception(
+        'Failed to get forwarding email address: ${res.statusCode}',
+      );
     }
 
-    return jsonDecode(res.body) as String;
+    return res.body;
   }
 }
