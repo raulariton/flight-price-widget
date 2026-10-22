@@ -1,10 +1,9 @@
 import { Injectable } from '@nestjs/common';
-process.loadEnvFile();
 
 @Injectable() // WHY? 
 export class PlusAddressingEmailGenerationService {
 
-  baseEmail: string = process.env.BASE_EMAIL || 'raul.spending@gmail.com';
+  baseEmail: string = process.env.BASE_EMAIL as string;
 
   generatePlusAddressingEmail(): string {
     const randomId = Math.random().toString(36).substring(2, 15);
